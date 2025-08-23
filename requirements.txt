@@ -18,8 +18,8 @@ requests-file==1.5.1
 six==1.16.0
 soupsieve==2.4
 tldextract==3.4.0
-urllib3==1.26.19
+urllib3==2.5.0
 Werkzeug==3.0.6
-urllib3==1.26.19
+urllib3==2.5.0
 Werkzeug==3.0.6
 zipp==3.19.1
