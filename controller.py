@@ -68,12 +68,17 @@ def main(url):
 
         # domain_age and whois_data
         whois_data = model.whois_data(domain)
-        trust_score = model.calculate_trust_score(trust_score, 'domain_age', whois_data['age'])
-        if whois_data['age'] == 'Not Given':
-            response['age'] = whois_data['age']
+        if whois_data and isinstance(whois_data, dict):
+            trust_score = model.calculate_trust_score(trust_score, 'domain_age', whois_data['age'])
+            if whois_data['age'] == 'Not Given':
+                response['age'] = whois_data['age']
+            else:
+                response['age'] = str(round(whois_data['age'],1)) + ' year(s)'
+            response['whois'] = whois_data['data']
         else:
-            response['age'] = str(round(whois_data['age'],1)) + ' year(s)'
-        response['whois'] = whois_data['data']
+            # WHOIS data not available
+            response['age'] = 'Not Available'
+            response['whois'] = {'Error': 'WHOIS data could not be retrieved'}
 
 
         # is_url_shortened

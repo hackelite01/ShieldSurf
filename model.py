@@ -175,8 +175,11 @@ def whois_data(domain):
         return {'age':age, 'data':data}
 
     except Exception as e:
-        print(f"Error: {e}")
-        return False
+        print(f"WHOIS Error for {domain}: {e}")
+        return {
+            'age': 'Not Given',
+            'data': {'Error': 'WHOIS lookup failed'}
+        }
 
 
 def pascal_case(s):
