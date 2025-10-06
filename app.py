@@ -6,8 +6,15 @@ from urllib.parse import urljoin
 import controller
 import json
 import html
+import os
 
-app = Flask(__name__)
+# Get the base directory
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+app = Flask(__name__, 
+            template_folder=os.path.join(base_dir, 'templates'),
+            static_folder=os.path.join(base_dir, 'static'))
+
 @app.route('/',  methods=['GET','POST'])
 def home():
     
