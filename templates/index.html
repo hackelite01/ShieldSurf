@@ -52,9 +52,6 @@
                 <p><strong>URL:</strong> {{output.url}}</p>
                 <p>{{output.msg}}</p>
             </div>
-            
-            <!-- Show limited analysis for WARNING status -->
-            {% if output.trust_score %}
 
             <!-- Success State: URL Accessible -->
             {% elif output.status == "SUCCESS" %} 
