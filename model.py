@@ -36,13 +36,75 @@ PROPERTY_SCORE_WEIGHTAGE = {
 
 
 # check whether the link is active or not
-def validate_url(url):
+def validate_url(url, timeout=10):
+    """
+    Validate if URL is accessible and return status information.
+    
+    Args:
+        url (str): The URL to validate
+        timeout (int): Request timeout in seconds
+    
+    Returns:
+        dict: {'accessible': bool, 'status_code': int/None, 'error': str/None}
+    """
     try:
-        response = requests.get(url)
-        return response.status_code
+        # Set a reasonable timeout to prevent hanging
+        response = requests.get(url, timeout=timeout, allow_redirects=True)
+        
+        return {
+            'accessible': True,
+            'status_code': response.status_code,
+            'error': None
+        }
 
-    except requests.exceptions.RequestException:
-        return False
+    except requests.exceptions.Timeout:
+        return {
+            'accessible': False,
+            'status_code': None,
+            'error': 'Request timeout - URL took too long to respond'
+        }
+    
+    except requests.exceptions.ConnectionError:
+        return {
+            'accessible': False,
+            'status_code': None,
+            'error': 'Connection failed - URL is not reachable'
+        }
+    
+    except requests.exceptions.TooManyRedirects:
+        return {
+            'accessible': False,
+            'status_code': None,
+            'error': 'Too many redirects - possible redirect loop'
+        }
+    
+    except requests.exceptions.SSLError:
+        return {
+            'accessible': False,
+            'status_code': None,
+            'error': 'SSL certificate verification failed'
+        }
+    
+    except requests.exceptions.InvalidURL:
+        return {
+            'accessible': False,
+            'status_code': None,
+            'error': 'Invalid URL format'
+        }
+    
+    except requests.exceptions.RequestException as e:
+        return {
+            'accessible': False,
+            'status_code': None,
+            'error': f'Request failed: {str(e)}'
+        }
+    
+    except Exception as e:
+        return {
+            'accessible': False,
+            'status_code': None,
+            'error': f'Unexpected error: {str(e)}'
+        }
 
 def include_protocol(url):
     try:

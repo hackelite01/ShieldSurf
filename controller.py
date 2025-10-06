@@ -10,13 +10,38 @@ def main(url):
 
     try:
 
-        # input validattion
+        # input validation
         url = model.include_protocol(url)
         url_validation = model.validate_url(url)
 
+        # Check if URL is accessible
+        if not url_validation['accessible']:
+            response = {
+                'status': 'ERROR', 
+                'url': url, 
+                'msg': f"URL is not accessible: {url_validation['error']}"
+            }
+            return response
+
+        # Check if status code indicates an error
+        if url_validation['status_code'] and url_validation['status_code'] >= 400:
+            response = {
+                'status': 'WARNING', 
+                'url': url, 
+                'msg': f"URL returned HTTP {url_validation['status_code']} error. Proceeding with limited analysis.",
+                'response_status': url_validation['status_code']
+            }
+            # Continue with analysis but mark as warning
+        else:
+            response = {
+                'status': 'SUCCESS', 
+                'url': url, 
+                'msg': "URL is accessible.",
+                'response_status': url_validation['status_code']
+            }
+
         # default data
         domain = tldextract.extract(url).domain + '.' + tldextract.extract(url).suffix
-        response = {'status': 'SUCCESS', 'url': url, 'msg': "URL is valid."}
         trust_score = BASE_SCORE
 
 
@@ -25,17 +50,12 @@ def main(url):
         # phishtank check
         phishtank_response = model.phishtank_search(url)
         if phishtank_response:
-            response = {'status': 'SUCCESS', 'url': url,
-                        'msg': "This is a verified phishing link."}
+            response['status'] = 'PHISHING'
+            response['msg'] = "⚠️ This is a verified phishing link! Do not visit this URL."
+            response['trust_score'] = 0
+            response['response_status'] = url_validation['status_code']
             return response
 
-        # if (url_validation == False):
-        #     response = {'status': 'ERROR', 'url': url, 'msg': "Link is not valid."}
-        #     return response
-
-
-        # website status
-        response['response_status'] = url_validation
 
         # domain_rank
         domain_rank = model.get_domain_rank(domain)
