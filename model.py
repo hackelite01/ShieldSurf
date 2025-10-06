@@ -12,6 +12,10 @@ import csv
 import time
 import socket
 import ssl
+import os
+
+# Get the base directory for file paths
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 global BASE_SCORE
@@ -52,13 +56,13 @@ def include_protocol(url):
 # get domain rank if it exists in top 1M list
 def get_domain_rank(domain):
     
-    with open('static/data/sorted-top1million.txt') as f:
+    with open(os.path.join(BASE_DIR, 'static/data/sorted-top1million.txt')) as f:
         top1million = f.read().splitlines()
 
     is_in_top1million = binary_search(top1million, domain)
 
     if is_in_top1million == 1:
-        with open('static/data/domain-rank.json', 'r') as f:
+        with open(os.path.join(BASE_DIR, 'static/data/domain-rank.json'), 'r') as f:
             domain_rank_dict = json.load(f)
         rank = domain_rank_dict.get(domain, 0)
         return int(rank)
@@ -134,7 +138,7 @@ def hsts_support(url): # url should be http / https as prefix
 # check for URL shortening services
 def is_url_shortened(domain): 
     try:
-        with open('static/data/url-shorteners.txt') as f:
+        with open(os.path.join(BASE_DIR, 'static/data/url-shorteners.txt')) as f:
             services_arr = f.read().splitlines()
         
         for service in services_arr:
