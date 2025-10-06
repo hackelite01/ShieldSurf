@@ -17,27 +17,13 @@ app = Flask(__name__,
 
 @app.route('/',  methods=['GET','POST'])
 def home():
+    
     try:
-        if request.method == 'POST':
-            url = request.form.get('url', '').strip()
-            if not url:
-                output = {
-                    'status': 'ERROR',
-                    'url': '',
-                    'msg': 'Please provide a URL to check.'
-                }
-            else:
-                result = controller.main(url)
-                output = result
-        else:
-            output = 'NA'
-    except Exception as e:
-        print(f"Error in home route: {e}")
-        output = {
-            'status': 'ERROR',
-            'url': request.form.get('url', 'Unknown'),
-            'msg': f'An unexpected error occurred: {str(e)}'
-        }
+        url = request.form['url']
+        result = controller.main(url)
+        output = result
+    except:
+        output = 'NA'
 
     return render_template('index.html', output=output)
 
